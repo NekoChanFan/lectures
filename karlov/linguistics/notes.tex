@@ -1,0 +1,202 @@
+\documentclass[oneside,final,14pt]{extreport}
+\input{/home/nekochan/lectures/templates/preamble.tex}
+
+\title{\Huge{Компьютерная дингвистика}\\ Конспекты по предмету}
+\author{\huge{Милов Данила}}
+\date{}
+
+\begin{document}
+\maketitle
+\newpage
+\tableofcontents
+\newpage
+\chapter{Конечные преобразователи}
+\section{Конечные преобразователи}
+\dfn{Конечный преобразователь}{Шестёрка $S=(Q,\Sigma,\Delta,q_0, \delta,F)$, где:\\
+Q --- множество состояний,\\
+$\Sigma$ --- входной алфавит,\\
+$\delta\subset Q\times\Sigma^*\times\delta \times Q$ --- конечное множество переходов(программа),\\
+$q_0$ --- начальное состояние,\\
+$F \subseteq Q$ --- множество закл. состояний}
+
+\dfn{Конфигурация}{
+  Тройка $(q,u,v)$, где $q\in Q, u\in \Sigma^*, v\in \Delta^*$
+}
+\dfn{Переход за один шаг($\vdash$)}{
+  $(q,u,v)\vdash_S(p,x,y), \text{ если существует }w\in\Sigma^*,t\in\Delta^*:\\
+  u=wx,y=vt$ и $q,w\rightarrow p,v \in \delta$
+}
+\dfn{Отношение, вычисляемое S}{
+  $R(S)= \{(x,y):(q_0,x,\varepsilon) \vdash^*_S (q_f,\varepsilon,y)\text{ для некоторого }q_f\in F\}$
+}
+\dfn{Детерминированный КП}{
+Шестёрка $S=(Q,\Sigma,\Delta,\delta,q_0,F),\text{ где }\delta: Q\times\Sigma\rightarrow Q\times\Delta^*$}
+
+\qs{Построить КП}{$\Sigma = \{a,b,c,\$\}$\\
+Заменить все чётные символы b на c(нумерация с 1).}
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.5\textwidth]{1.jpg}
+  \end{center}
+\end{figure}
+
+\qs{Построить КП}{$\Sigma = \{a,b,c,\$\}$\\
+Стереть все символы a, стоящие непосредственно после символов b.}
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.5\textwidth]{2.jpg}
+  \end{center}
+\end{figure}
+
+\qs{Построить КП}{$\Sigma = \{a,b\}$\\
+Удалить из x все блоки символов a чётной длины.}
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.5\textwidth]{3.jpg}
+  \end{center}
+\end{figure}
+
+\nt{Домашнее задание:\\№134(в,г),133,137}
+
+\section{Морфологический анализ}
+\noindent Задачи морфологического анализа:
+\begin{enumerate}
+  \item Дано слово, поставить его в нужную форму.
+  \item Дано слово, найти его начальную форму.
+\end{enumerate}
+
+\mprop{Рассматриваемые характеристики}{
+  \begin{itemize}
+    \item N --- существительное(noun)
+    \item V --- глагол(verb)
+    \item SG --- единственное число(singular)
+    \item PL --- множественное число(plural)
+  \end{itemize}
+}
+\ex{}{
+  cat+N+PL $\Rightarrow$ cats\\
+  cats $\Rightarrow$ cat+N+PL
+}
+
+\dfn{Морфологические правила}{
+  Определяют, как образуются формы.\\
+  Пример: английский язык, множественное лицо = ед. число + s.
+}
+
+\dfn{Орфографические правила}{
+  Определяют, как меняется написание.\\
+  Пример --- англ. язык, мн. число:\\
+  Слово заканчивается на s $\rightarrow$ вставить е.\\
+  Слово заканчивается на y $\rightarrow$ заменить на iе.\\
+  Слово является исключением $\rightarrow$ особый случай.
+}
+
+\dfn{Основа}{<<Главная часть>> слова.}
+
+\dfn{Аффексы}{Части слова, приписываемые к основе:
+\begin{enumerate}
+  \item Префиксы: пишутся спереди.
+  \item Суффиксы: пишутся сзади.
+  \item Инфиксы: пишутся внутри.
+  \item Циркумфиксы: спереди и сзади.
+\end{enumerate}}
+
+\nt{Для морфологического анализатора необходимы:
+\begin{enumerate}
+  \item Словарь --- список основ и аффексов.
+  \item Морфотактика --- правила объединения морфем.
+  \item Орфографические правила.
+\end{enumerate}}
+
+\newpage
+\ex{Автомат, проверяющий правильность определения множественного числа}{
+  \textbf{reg-noun} --- правильные существительные;\\
+  \textbf{irreg-sg-noun} --- единственное число <<неправильных>> существительных;
+  \textbf{irreg-pl-noun} --- множественное число <<неправильных>> существительных;\\
+  \textbf{plural(-s)} --- s.
+  \begin{figure}[H]
+    \begin{center}
+      \includegraphics[width=0.5\textwidth]{4.jpg}
+    \end{center}
+  \end{figure}
+}
+
+\dfn{Префиксное дерево}{Есть множество слов $S=\{S_1,\dots,S_n\}$. \begin{enumerate}
+  \item Рёбра дерева помечены символами.
+  \item Рёбра, выходящие из одной вершины, помечены разными символами.
+  \item На пути из корня в листья написаны слова из $S$.
+  \item Для каждого $S_i$ существует вершина $v$ такая, что на пути из корня в $v$ написано $S_i$($v$ отмечены $i$).
+\end{enumerate}}
+
+\newpage
+\ex{Префиксное дерево}{
+  Префиксное дерево для слов: алгебра, алгоритм, гомоморфизм, гомотопия, гомеоморфизм, шар, шары.
+  \begin{figure}[H]
+    \begin{center}
+      \includegraphics[width=0.5\textwidth]{5.jpg}
+    \end{center}
+  \end{figure}
+}
+
+\ex{Автомат, распознающий множественное число слов}{
+  \begin{figure}[H]
+    \begin{center}
+      \includegraphics[width=0.5\textwidth]{6.jpg}
+    \end{center}
+  \end{figure}
+}
+
+\newpage
+\ex{Автомат для распознавания прилагательных(1)}{
+  \textbf{adj-root} --- корень прилагательного\\
+  \textbf{un-, -er, -est, -ly} --- аффексы слов.
+  \begin{figure}[H]
+    \begin{center}
+      \includegraphics[width=0.5\textwidth]{7.jpg}
+    \end{center}
+  \end{figure}
+}
+\ex{Автомат для распознавания прилагательных(2)}{
+  \textbf{adj-root$_1$} --- корень прилагательного, который может употребляться с приставками\\
+  \textbf{adj-root$_2$} --- корень прилагательного, который не может употребляться с приставками\\
+  \textbf{un-, -er, -est, -ly} --- аффексы слов.\\
+  Это недетерминированный вариант автомата(угадываем переход по пустому слову в $q_1$ или $q_3$).
+  \begin{figure}[H]
+    \begin{center}
+      \includegraphics[width=0.5\textwidth]{8.jpg}
+    \end{center}
+  \end{figure}
+}
+
+\mprop{Три уровня конечного преобразователя}{
+  \begin{enumerate}
+    \item Лексический: слово и его признаки.(
+      \begin{tabular}{|c|c|c|c|c|}
+        \hline f&o&x&+N&+PL\\\hline
+      \end{tabular}
+      )
+    \item Промежуточный: морфемы и доп.метки(
+      \begin{tabular}{|c|c|c|c|c|}
+        \hline f&o&x&$\hat{\phantom{a}}$&s\\\hline
+      \end{tabular}
+      )
+    \item Поверхностный: слово(
+      \begin{tabular}{|c|c|c|c|c|}
+        \hline f&o&x&e&s\\\hline
+      \end{tabular}
+      )
+  \end{enumerate}
+}
+
+\ex{Преобразователь слов с лексического уровня в промежуточный}{
+  Обозначения:\\
+  $\alpha:\beta$ --- читаем $\alpha$, пишем $\beta$,\\
+  $\alpha$ --- читаем $\alpha$ и печатаем $\alpha$.
+  \begin{figure}[H]
+    \begin{center}
+      \includegraphics[width=0.5\textwidth]{9.jpg}
+    \end{center}
+  \end{figure}
+}
+
+\end{document}

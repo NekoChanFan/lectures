@@ -1,0 +1,7 @@
+*latexmk
+*.log
+*.gz
+*.toc
+*.aux
+*.fls
+algorithms/
