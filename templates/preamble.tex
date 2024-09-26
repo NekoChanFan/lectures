@@ -35,7 +35,7 @@
 \usepackage{transparent}
 \graphicspath{{images/}}
 \DeclareGraphicsExtensions{.pdf,.png,.jpg} 
-\usepackage{algorithmicx}
+\usepackage{algpseudocode}
 \usepackage{algorithm}
 \usepackage[linguistics]{forest}
 
@@ -719,15 +719,40 @@
 	\@starttoc{toc}}
 \makeatother
 
-% \floatname{algorithm}{Procedure}
-% \renewcommand{\algorithmicrequire}{\textbf{Ввод:}}
-% \renewcommand{\algorithmicensure}{\textbf{Вывод:}}
-% \renewcommand{\algorithmicif}{\textbf{\underline{если}}}
-% \renewcommand{\algorithmicthen}{\textbf{\underline{то}}\{}
-%   \renewcommand{\algorithmicendif}{\}}
-% \renewcommand{\algorithmicendfor}{\}}
-% \renewcommand{\algorithmicendwhile}{\}}
-% \renewcommand{\algorithmicfor}{\textbf{\underline{для}}}
-%
-% \renewcommand{\algorithmicwhile}{\textbf{\underline{пока}}}
-% \renewcommand{\algorithmicdo}{\{}
+\algrenewcommand{\algorithmicrequire}{\textbf{Ввод:}}
+\algrenewcommand{\algorithmicensure}{\textbf{Вывод:}}
+\algrenewcommand{\algorithmicif}{\textbf{\underline{если}}}
+\algrenewcommand{\algorithmicthen}{\textbf{\underline{то}}\{}
+\algrenewtext{EndWhile}{\}}
+\algrenewtext{Else}{\textbf{\underline{то}}}
+\algrenewtext{ForAll}{\underline{\textbf{для всех}} }
+\algrenewtext{EndFor}{\}}
+\algrenewtext{EndIf}{\}}
+\algrenewcommand{\algorithmicfor}{\textbf{\underline{для}}}
+\algrenewcommand{\algorithmicwhile}{\textbf{\underline{пока}}}
+\algrenewcommand{\algorithmicdo}{\{}
+
+\newcommand{\mvec}[2]{(#1_{1},\dots,#1_{#2})}
+\newcommand{\MI}[3]{\huge\textbf{Математическая индукция}\\
+  \normalsize Индукция по #1\\
+  \textbf{Базис индукции:}\\#2\\
+  \textbf{Индукционный шаг:}\\#3
+}
+
+
+\newcommand{\malg}[4]{\begin{algorithm}[H]
+    \caption{#1}
+    \begin{algorithmic}[1]
+    \Require #2
+    \Ensure #3
+    #4
+  \end{algorithmic}
+\end{algorithm}}
+\newcommand{\mAlg}[4]{
+    \caption{#1}
+    \begin{algorithmic}[1]
+    \Require #2
+    \Ensure #3
+    #4
+  \end{algorithmic}
+}

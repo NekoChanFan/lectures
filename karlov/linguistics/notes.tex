@@ -80,7 +80,7 @@ $F \subseteq Q$ --- множество закл. состояний}
 
 \dfn{Морфологические правила}{
   Определяют, как образуются формы.\\
-  Пример: английский язык, множественное лицо = ед. число + s.
+  Пример: английский язык, множественное число = ед. число + s.
 }
 
 \dfn{Орфографические правила}{
@@ -198,5 +198,107 @@ $F \subseteq Q$ --- множество закл. состояний}
     \end{center}
   \end{figure}
 }
+
+\ex{Примеры правил}{
+  \begin{enumerate}
+    \item Замена Y. Замена -y на -ie перед -s, -i перед -ed.($try \Rightarrow tries$)
+    \item Удвоение согласной перед -ing/-ed.($bed\Rightarrow begging$)
+    \item Удаление -е перед -ing,-ed.(make$\Rightarrow$making)
+    \item Вставка -е после -s,-z,-x,-ch,-sh перед -s.(watch$\Rightarrow$watches)
+  \end{enumerate}
+}
+
+\mprop{Запись правил}{
+  $a\Rightarrow b/c\_d$ ---
+  Заменить a на b между c и d.\\
+  a,b,c,d --- строки.\\
+  $cad\Rightarrow cbd$
+}
+
+% \ex{Вставка -е}{
+%   %x,s,z надо друг под другом написать
+%   $\varepsilon\rightarrow e/\{xsz\}\hat{\phantom{a}}_s\#$
+%   fox$\hat{\phantom{a}}$s\# \Rightarrow fox$\hat{\phantom{a}}$es\#
+% }
+
+%Вставить пример с доски 1
+
+\newpage
+\ex{КП для распознавания особых случаев образования множественного числа}{
+  Символы: $s,z,x,\hat{\phantom{a}},\#$, др --- любой другой символ.
+  \begin{figure}[H]
+    \begin{center}
+      \includegraphics[width=0.5\textwidth]{10.jpg}
+    \end{center}
+  \end{figure}
+}
+
+\dfn{Обратное отношение}{
+  $S=(Q,\Sigma,\Delta,\delta,q_0,F), R(S)\subseteq\Sigma^*\times\Delta$ --- конечный преобразователь.\\
+  $S'=(Q,\Delta,\Sigma, \delta',q_0,F)$ --- конечный преобразователь, для которого множества входных и выходных данных поменяны местами.\\
+  А программа имеет вид:\\
+  $q,x\rightarrow p,y\in\delta\Leftrightarrow q,y\rightarrow p,x\in\delta'$\\
+  Тогда:\\
+  $R(S')=(R(S))^{-1}$\\
+  $(x,y)\in R(S')\Leftrightarrow(y,x)\in R(S)$
+}
+
+\mprop{Морфологический анализ слов}{
+  Конечный преобразователь из примера выше может быть использован не
+  только для того, чтобы проверить правильность образования формы
+  множественного числа, но и для того, чтобы на его основе построить
+  автомат $S'$, обратный данному, восстанавливающий второй уровень слова
+  по третьему.
+
+  Пример: выделим морфемы в словах cats и foxes. Для этого построим автомат,
+  вычисляющий отношение, обратное $R(S)$.\\ \begin{tabular}{|c |c |c  |c |c |c|c|}
+    \hline c & a & t & s & \# &\\
+    $q_0$ & $q_0$ & $q_0$ & $q_0$ & $q_1$&\\
+    $c$ & $a$ & $t$ & $\hat{\phantom{a}}$ & $s$ & $\#$\\\hline
+  \end{tabular}~~~~~~
+  \begin{tabular}{|c |c |c  |c |c |c|c|c|}
+    \hline f & o & x & e & &s & \# &\\
+    $q_0$ & $q_0$ & $q_0$ & $q_1$ & $q_2$& $q_3$& $q_4$& $q_0$\\
+    $f$ & $o$ & $x$ & $\hat{\phantom{a}}$ & $\varepsilon$ & $s$&$\#$&\\\hline
+  \end{tabular}
+
+}
+
+\section{Алгоритм Портера}
+\nt{Алгоритм Портера в презентации Бориса Николаевича}
+
+\qs{Применить алгоритм}{
+  Слово: \textbf{compiling}
+
+  \begin{enumerate}
+    \item ---
+    \item
+      \begin{enumerate}
+        \item[2.a)] compil
+        \item[2.б)] ---
+      \end{enumerate}
+    \item ---
+    \item ---
+    \item ---
+    \item ---
+    \item ---
+  \end{enumerate}
+}
+
+\qs{Применить алгоритм}{
+  Слово: \textbf{comlipation}
+  \begin{enumerate}
+    \item ---
+    \item---
+    \item ---
+    \item compilate
+    \item ---
+    \item compil
+    \item ---
+  \end{enumerate}
+}
+
+\nt{\textbf{Д/з:} прогнать алгоритм Портера для слов:\\
+formalization, axiomatization, enumeration, fuzzieness, finger, singer}
 
 \end{document}

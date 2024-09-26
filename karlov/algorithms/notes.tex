@@ -1,0 +1,358 @@
+\documentclass[oneside,final,14pt]{extreport}
+\input{/home/nekochan/lectures/templates/preamble.tex}
+
+\title{\Huge{Алгоритмы и анализ сложности}\\ Конспекты по предмету(Графы)}
+\author{\huge{Милов Данила}}
+\date{}
+
+\begin{document}
+\maketitle
+\newpage
+\tableofcontents
+
+% \chapter{Основные алгоритмы}
+% \section{Минимальное остовное дерево}
+% \dfn{Минимальное остовное дерево}{
+%   $G=(V,E)$ --- неориентированный граф.\\
+%   $c:E\rightarrow \mathbb{R}$ --- стоимость ребра $l$.\\
+%   Остовное дерево(остов) графа $G$ --- дерево $S=(V,T)$\\
+%   Стоимость остова: $c(S)=\displaystyle\sum\limits_{l\in T}c(l)$\\
+%   Минимальный остов --- остов наименьшей стоимости.
+% }
+%
+% \mlenma{}{
+% Пусть $(V_1,T_1),\dots,(V_k,T_k)$ --- лес, $\bigcup\limits_{i=1}^k
+% V_i=V, V_i\cap V_j=\emptyset\text{ при } i \neq j$. Пусть $l\in E$ ---
+% ребро наименьшей стоимости, конци которого принадлежат разным деревьям.
+% Тогда сузествует остов $S$, содержащий $T_1\cup\dots\cup T_k\cup\{l\}$ и
+% такой, что стоимость S не превосходит стоимости любого остова,
+% содержащего $T_1\cup\dots\cup T_k$ }
+%
+% \pf{Доказательство}{
+% $l=(u,v), u\in V_i, v \in V_j$\\
+% $S'$ --- минимальный остов, содержащий в себе $T_1\cup\dots\cup T_k$\\
+% Пусть $S'$ не содержит $l$ $S'=(V,T')$.\\
+% В $S'$ есть путь из $u$ в $v$.\\
+% Пусть $w$ --- первая вершина на этом пути, не принадлежащая $V_i$.\\
+% Концы $l'$ находятся в разных деревьях.\\
+% По выбору $l c(l)\leq c(l')$\\
+% $S=(V,(T'\cup\{l\}\{l'\}))$ --- новый остов(дерево)\\
+% $c(S)=c(S')+c(l)-c(l')\leq c(S')$\\
+% т.к. $S'$ --- минимальный остов, $c(S) = c(S') \Rightarrow S$ --- минимальный остов.
+% \begin{figure}
+%   \begin{center}
+%     \includegraphics[width=0.45\textwidth]{./images/1.jpg}
+%   \end{center}
+% \end{figure}
+% }
+%
+% \begin{algorithm}
+%   \caption{Крускала}
+%   \begin{algorithmic}[1]
+%     \Require{$Qs$ --- очередь с ??? для рёбер}
+%     \Ensure{$Vs$ --- набор непересекающихся подмножеств вершин}
+%     \State{$T$ = $\emptyset$, $Vs$ = $\emptyset$}
+%     \State{Создаём очередь с ??? $Q$ из всех рёбер из $E$}
+%     \ForAll{$v$ $\in$ $V$}
+%       \State{Добавить \{$v$\} к $Vs$}
+%     \EndFor
+%     \While{|$Vs$|>1}
+%       \State{($v$,$w$)= MIN($Q$); УДАЛИТЬ($Q$,($v$,$w$))}
+%       \State{$w_1$ = НАЙТИ($v$); $w_2$ = НАЙТИ($w$)}
+%       \If{$w_1\neq w_2$}
+%         \State{ОБЪЕДИНИТЬ($w_1,w_2,w_1$)}
+%         \State{$T$ = $T$ $\cup$ \{($v$,$w$)\}}
+%       \EndIf
+%     \EndWhile
+%   \end{algorithmic}
+% \end{algorithm}
+%
+% \thm{}{Алгоритм Крускала строит минимальное остовное дерево для связного
+% неориентированного графа $G=(V,E)$.\\ Если в цикле в строках 4-11
+% рассматривается $d$ рёбер, то \textbf{время работы} составляет
+% $O(d\log\limits_2|E| + |E|\log\limits_2|E|) \leq
+% O(|E|\log\limits_2|E|)$}
+\chapter{}
+\section{Потоки в сетях}
+\dfn{Сеть}{
+  Пятёрка $N=(V,E,s,t,c)$, где:\\
+  $(V,E)$ --- ориентированный граф\\
+  $s\in V$ --- источник, вершина, в которую не входят рёбра\\
+  $t\in V$ --- сток, вершина, из которой не выходят рёбра\\
+  $c: E\rightarrow R_+$ --- прорускные способности рёбер.
+}
+
+\dfn{Поток в сети f}{
+  Отображение f: E$\rightarrow$R такое, что:
+  \begin{enumerate}
+    \item $0\leq f(e)\leq c(e)$ для всех $e\in E$;
+    \item $\displaystyle\sum\{f(u,v): (u,v)\in E\} = \displaystyle\sum\{f(v,u):(v,u)\in E\}$ для $v\notin\{s,t\}$
+  \end{enumerate}
+  (2) --- закон Кирхгофа: величина потока f: $val(f)=\displaystyle\sum_{(s,v)\in E}f(s,v)$
+}
+
+\dfn{Максимальный поток}{
+  Поток с наибольшей величиной.
+}
+
+\newpage
+\ex{Пример графа потоков в сетях}{
+  Обозначения: 
+  \begin{itemize}
+    \item число в скобках --- пропускная способность,
+    \item число без скобок --- величина потока по ребру(поток по ребру).
+  \end{itemize}
+  % рисунок 1
+  \begin{figure}[H]
+    \begin{center}
+      \includegraphics[width=0.45\textwidth]{./images/2.jpg}
+    \end{center}
+  \end{figure}
+
+  $val(f)=3+6+4 = 13$ --- не максимальный поток.
+}
+
+\dfn{Разрез в сети $N=(V,E,s,t,c)$}{
+  Множество $A\subseteq V$ такое, что $s \in A, t\notin A.$\\
+  Любое множество вершин, содержащее источник, но не содержащее сток.
+}
+
+\dfn{P(A)}{
+  $A\subseteq V$(Не обязательно разрез)\\
+  P(A) = $\{(u,v):u\in A,v\in V\backslash A\}$ --- все рёбра, выходящие из множества A наружу.
+}
+
+\dfn{Пропускная способность разреза A}{
+  %\ вместо /
+  $c(A,V\backslash A) = \displaystyle\sum_{(u,v)\in P(A)} c(u,v)$
+}
+
+\dfn{Минимальный разрез}{
+  Разрез с минимальной пропускной способностью.
+}
+
+\dfn{Поток через разрез A}{
+  %\ вместо /
+  $f(A,V\backslash A) = \displaystyle\sum_{(u,v)\in P(A)} f(u,v)$
+}
+
+\ex{}{
+  $A = \{s,a,b\}$\\
+  $P(A)=\{(a,f),(b,e),(b,f),(b,g),(s,c)\}$\\
+  $P(V/A)=\{(e,a)\}$\\
+  $c(A,V\backslash A)=6+2+3+2+6=19$\\
+  $f(A,V\backslash A)=5+2+2+2+4=15$\\
+  $f(V\backslash A,A)=2$\\
+  $f(A,V\backslash A)-f(V\backslash A,A)=15-2=13$
+}
+\ex{}{
+  $B = \{s,e,f\}$\\
+  $P(B)=\{(s,a),(s,b),(s,c),(e,a),(e,t),(f,t)\}$\\
+  $P(V/B)=\{(b,e),(c,e),(a,f),(b,f)\}$\\
+  $c(B,V\backslash B)=6+8+6+4+6+8=38$\\
+  $f(B,V\backslash B)=3+6+4+2+4+7=26$\\
+  $f(V\backslash B,B)=2+4+5+2=13$\\
+  $f(B,V\backslash B)-f(V\backslash B,B)=26-13=13$
+}
+
+\mprop{}{
+  Если $(u,v)\notin E$, то $c(u,v)=0,f(u,v)=0$
+}
+
+\mlenma{}{
+  $val(f)=f(A,V\backslash A)-f(V\backslash A,A)$ для любого потока или разреза A.
+}
+
+\pf{Доказательство}{
+  $\displaystyle\sum_{v\in V}f(u,v) - \displaystyle\sum_{v\in V}f(v,u) = \begin{cases}
+    val(f), \text{ если } u = s,\\
+    0, \text{ если } u = s,
+  \end{cases}\\
+  \displaystyle\sum_{u\in A}\displaystyle\sum_{v\in V}f(u,v)-\displaystyle\sum_{u\in A}\displaystyle\sum_{v\in V}f(v,u)=val(f)\\
+  u\in A,v\in A$ --- слагаемые взаимно уничтожаются.\\
+  Тогда:\\
+  $\displaystyle\sum_{u\in A}\displaystyle\sum_{v\in V\backslash A}f(u,v)-\displaystyle\sum_{u\in A}\displaystyle\sum_{v\in V\backslash A}f(v,u)=val(f)\\$
+  $f(A,V\backslash A)-f(V\backslash A,A)=val(f)$
+}
+
+\cor{}{
+  $val(f)= \displaystyle\sum_{v\in V}f(v,t)$
+}
+
+\thm{Форд, Фалкерсон}{
+  Величина любого потока в сети не превосходит пропускной способности минимального разреза.
+}
+\pf{Доказательство}{
+  $A$ --- разрез($s\in A,t\notin A$)\\
+  $val(f) = f(A,V\backslash A)-f(V\backslash A,A)\leq f(A,V\backslash A)=\displaystyle\sum_{e\in P(A)}f(e)\leq\displaystyle\sum_{e\in P(A)}c(e)=c(A,V\backslash A)$
+}
+
+\dfn{Увеличивающий путь относительно потока $f$ из $s$ в $v$}{
+  Последовательность вершин $\mvec{v}{n}$ такая, что:
+  \begin{enumerate}
+    \item $v_0=s,v_n=v$
+    \item $(v_i,v_{i+1})\in E$ или $(v_{i+1},v_{i})\in E$
+    \item если $(v_i,v_{i+1})\in E$, то $f(v_i,v_{i+1})<c(v_i,v_{i+1})$
+    \item если $(v_{i+1},v_i)\in E$, то $f(v_{i+1},v_i)>0$
+  \end{enumerate}
+  Ребро $e$ насыщенное, если $f(e)=c(e)$.\\
+  Ребро $e$ непустое, если $f(e)>0$.
+}
+
+\ex{Примеры увеличивающих путей} {
+  В графе из примера 1 увеличивающими являются пути:\\
+  $s\xrightarrow{(6)3}a\xrightarrow{(6)5}f\xrightarrow{(8)7}t$,\\
+  $s\xrightarrow{(6)3}a\xleftarrow{(4)2}e\xrightarrow{(6)4}t$.\\
+  В то время как путь
+  $s\xrightarrow{(8)6}b\xrightarrow{(2)2}g\xrightarrow{(2)2}t$ увеличивающим не является.
+}
+
+\thm{}{
+  Следующие условия эквивалентны:
+  \begin{enumerate}
+    \item поток $f$ максимальный
+    \item не существует увеличивающего пути относительно $f$
+    \item для некоторого разреза $A val(f)=c(A,V\backslash A).$
+  \end{enumerate}
+}
+\pf{Доказательство}{
+  1)$\Rightarrow$2) От противного.\\
+  $(s=v_0,v_1,\dots,v_{k-1},v_k=t)$ --- увеличивающий путь.\\
+  $e_i=(v_i,v_{i+1})\\
+  \Delta(e_i)=\begin{cases}
+    c(e_i)-f(e_i), \text{ если } e_i \text{ ---  прямое ребро}\\
+    f(e_i), \text{ если } e_i \text{ ---  обратное ребро}\\
+  \end{cases}$\\
+  $\Delta(e_i)>0\\
+  \delta=min\{\Delta(e_i):0\leq i\leq k-1\}$\\
+  $\delta>0\\
+  f' \text{ --- новый поток}\\
+  f'(e)=\begin{cases}
+    f(e)+\delta, \text{ если e --- прямое ребро}\\
+    f(e)-\delta, \text{ если e --- обратное ребро}\\
+    f(e), \text{иначе}
+  \end{cases}$
+  % картинка со стрелочками
+  \begin{figure}[H]
+    \begin{center}
+      \includegraphics[width=0.45\textwidth]{./images/3.jpg}
+    \end{center}
+  \end{figure}
+  $val(f')=val(f)+\delta\\
+  f$ --- не максимальный. Противоречие.
+
+  2)$\Rightarrow$3)\\
+  $A=\{v\in V:\text{ существует увеличивающий путь из $s$ в $v$}\}$\\
+  $A$ --- разрез, так как $t\notin A$(по условию)\\
+  % рисунок
+  $(u,v)$ --- прямое ребро $\Rightarrow f(u,v)=c(u,v)$\\
+  $(u,v)$ --- обратное ребро $\Rightarrow f(u,v)=0$\\
+  Иначе можно продлить увеличивающий путь\\
+  $var(f) = f(A,V\backslash A)-f(V\backslash A,A) = \displaystyle\sum_{e\in P(A)}f(e)-\displaystyle\sum_{e\in P(V\backslash A)}f(e)=\\=\displaystyle\sum_{e\in P(A)}c(e)=c(A,V\backslash A)$
+
+  3)$\Rightarrow$1) По теореме 1.
+}
+
+\thm{Форд, Фалкерсон}{
+  Величина максимального потока равна пропускной способности минимального разреза.
+}
+\pf{Доказательство}{
+  $A$ --- минимальный разрез\\
+  $f$ --- максимальный поток\\
+  $val(f) \leq c(A,V\backslash A)$ --- по теореме 1\\
+  Если $val(f) < c(A,V\backslash A)$, то $f$ не максимальный по теоремме 2.\\
+  Следовательно, $val(f) = c(A,V\backslash A)$
+}
+
+\mprop{Структуры данных в алгоритме Форда-Фолкенсона}{
+\begin{itemize}
+  \item $L(v)$ --- предшественник $v$ в увеличивающем пути.
+  \item $\delta(v)$ --- величина дополнительного потока из $s$ в $v$.
+  \item $Q$ --- очередь вершин.
+  \item Вершины пронумерованы числами 1,2,\dots
+\end{itemize}
+}
+
+\malg{ПРОСМОТРЕТЬ}{v}{ничего}{
+  \ForAll{$(v,u)\in E$}
+    \If{$L(u)=0$ и $f(v,u)<c(v,u)$}
+      \State $L(u) = v;$
+      \State $\delta(u)=min\{\delta(v),c(v,u)-f(v,u)\};$
+      \State ДОБАВИТЬ($Q,u$);
+    \EndIf
+  \EndFor
+  \ForAll{$(v,u)\in E$}
+    \If{$L(u)=0$ и $f(u,v)>0$}
+      \State $L(u)=-v;$
+      \State $\delta(u)=min\{\delta(u),f(u,v)\};$
+      \State ДОБАВИТЬ($Q,u$);
+    \EndIf
+  \EndFor
+}
+\malg{Форда-Фолкерсона}{сеть $N=(V,E,s,t,c)$}{максимальный поток $f$ в $N$}{
+  \State готово = "нет"
+  \ForAll{$e\in E$}
+    \State $f(e) = 0$;
+  \EndFor
+  \While{готово = "нет"}
+    \ForAll{$v\in V\backslash \{s\}$}
+      \State $L(v)=0; \delta(v) = 0;$
+    \EndFor
+    \State $L(s) = s;\delta(s)=\infty;$
+    \State Добавить(Q,s);
+    \While{$Q\neq\emptyset$}
+      \State $v=$НАЧАЛО($Q$);
+      \State УДАЛИТЬ($Q,v$);
+      \State ПРОСМОТРЕТЬ($v$);
+    \EndWhile
+    \If{$L(t)\neq 0$}
+      \State $v=t$;
+      \While{$v\neq s$}
+        \State $u=L(v);$
+        \If{$u>0$}
+          \State $f(u,v)=f(u,v)+\delta(t);$
+        \Else 
+          \State $f(v,u)=f(v,u)-\delta(t);$
+        \EndIf
+        \State $v=|u|$
+      \EndWhile
+    \Else
+      \State готово = "да";
+    \EndIf
+  \EndWhile
+}
+
+\newpage
+\ex{Пример применения алгоритма Форда-Фолкерсона}{
+  Применить алгоритм к сети из примера 1.\\
+  Шаги алгоритма:
+  \begin{figure}[H]
+    \begin{center}
+      \includegraphics[width=0.9\textwidth]{./images/4.jpg}
+    \end{center}
+  \end{figure}
+  Итоговый граф потоков:
+  \begin{figure}[H]
+    \begin{center}
+      \includegraphics[width=0.45\textwidth]{./images/5.jpg}
+    \end{center}
+  \end{figure}
+}
+
+\newpage
+\qs{Применить алгоритм Форда-Фолкерсона}{
+  Исходный граф(после зачёркиваний новые значения, получаемые на шагах алгоритма):
+  \begin{figure}[H]
+    \begin{center}
+      \includegraphics[width=0.45\textwidth]{./images/6.jpg}
+    \end{center}
+  \end{figure}
+  Шаги алгоритма:
+  \begin{figure}[H]
+    \begin{center}
+      \includegraphics[width=0.9\textwidth]{./images/7.jpg}
+    \end{center}
+  \end{figure}
+}
+
+\end{document}
