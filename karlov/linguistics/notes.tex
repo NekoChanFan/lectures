@@ -301,4 +301,862 @@ $F \subseteq Q$ --- множество закл. состояний}
 \nt{\textbf{Д/з:} прогнать алгоритм Портера для слов:\\
 formalization, axiomatization, enumeration, fuzzieness, finger, singer}
 
+\chapter{Орфографические ошибки}
+\section{Исправление орфографических ошибок}
+\mprop{Виды орфографических ошибок}{
+  \begin{enumerate}
+    \item \textbf{Не слова:} ошибка приводит к слову, которого нет.
+    \item \textbf{Не то слово:} конченый автомат $\rightarrow$ конечный автомат.
+  \end{enumerate}
+}
+\mprop{Исправление ошибок}{
+  \begin{enumerate}
+    \item \textbf{Изолированное исправление} исправляем одно слово, контекст игнорируется.
+    \item \textbf{С учётом контекста.}
+  \end{enumerate}
+}
+
+\dfn{Выравнивание строк}{
+  $S[1\dots n],T[1\dots m]\in\Sigma\\
+  \text{---} \notin\Sigma$\\
+  $\sigma$ --- стоимость однобуквенного выравнивания.\\
+  $\sigma(a,a)\geq0\\
+  \sigma(\text{---},a)\leq0\\
+  \sigma(a,\text{---})\leq0\\
+  \sigma(\text{---},\text{---})\leq0$
+
+  Выравнивание строк: $S'[1\dots l],T'[1\dots l]$ такие, что $S,T$ --- проекции $S',T'$ на $\Sigma$
+}
+\dfn{Стоимость выравнивания $S',T'$}{
+  $\sigma(S',T')=\displaystyle\sum_{i=1}\sigma(S'[i],T'[i])$
+}
+\dfn{Оптимальное выравнивание}{
+  Выравнивание наибольшей стоимости.
+}
+\dfn{Редакционное расстояние}{
+  Наименьшее число операций вставки символа, удаления символа и замены символа для преобразования $S$ в $T$.
+}
+
+\dfn{Алгоритм Вагнера-Фишера}{
+  $V(i,j)$ --- наибольшая стоимость выравнивания $S[1\dots i]$ и $T[1\dots j]$\\
+  $V(0,0)=0$\\
+  $V(i+1,0)=V(i,0)+\sigma(S[i+1],\text{---})$\\
+  $V(0,j+1)=V(0,j)+\sigma(\text{---},T[j+1])$\\
+  $V(i+1,j+1)=max\{V(i,j)+\sigma(S[i+1],T[j+1]),\\
+    V(i+1,j)+\sigma(\text{---},T[j+1]),\\
+    V(i,j+1)+\sigma(S[i+1],\text{---}),
+  \}$\\
+Время: O(mn)\\
+Память: O(mn), если нужно само выравнивание\\
+O(min\{m,n\}), если нужна только стоимость
+}
+
+\mprop{Версия алгоритма с хорошей памятью}{
+  $W(i,j)$ --- наибольшая стоимость выравнивания $S[n-i+1\dots n]$ и $T[m-j+1\dots m]$
+  \nt{Задача. Написать рекурсивные соотношения для $W$}
+  $W(m,n)=V(m,n)$\\
+  Время W: O(mn)\\
+  $m\leq n$
+\begin{enumerate}
+  \item Если $m=1$, то найти такое $i$, что $\sigma(S[i],T[1])$ максимально. То есть выбрать один из вариантов:
+    \begin{itemize}
+      \item 
+    \end{itemize}
+  \item  Пусть $m>1$.
+  \item  Пусть $T_1=T[1\dots\frac{m}{2}],T_2=T[\frac{m}{2}+1\dots m]$.
+  \item  Вычислять последние строки таблицы V для $S$ и $T_1$, таблицы $W$ для $S$ и $T_2$
+  \item  Найти такое $i$, что $V(i,\frac{m}{2})+W(n-i,\frac{m}{2})$ максимально.
+  \item  Рекурсивно найти оптимальное выравнивание $S[1\dots i]$ и $T_1$, $S[i+1\dots n]$ и $T_2$.
+\end{enumerate}
+}
+\clm{}{Время алгоритма}{
+$T(n,m)\leq 2mn$
+}
+\pf{Доказательство}{
+  $T(n,m) = mn+T(i,\frac{m}{2}) + T(n-1,\frac{m}{2})$\\
+  $S$ и $T_1$ --- $\frac{m}{2}n, S$ и $T_2$ --- $\frac{m}{2}n$, всего --- $mn$
+  % \MI{m}{
+  %   $m=1. T(n,1)\leq 2n$ --- верно
+  % }{
+  %   $T(n,m) = mn+T(i,\frac{m}{2})+T(n-i,\frac{m}{2})\leq mn+2i*\frac{m}{2}+2(n-i)\frac{m}{2}=mn+im+mn-im=2mn$
+  % }
+}
+\clm{}{Память алгоритма}{
+  Когда $i$ найдено, $V$ и $W$ больше не нужны. Вычисляем $V$ и $W$ в глобальном массиве размера $O(m) = O(min\{m,n\})$.\\
+  Число рекурсивных вызовов $\leq log_2 m.$\\
+  Память под стек: $O(log_2m)$\\
+  Общая память: $O(m)=O(min\{m,n\}$
+}
+
+\section{Формула Байеса}
+\dfn{Условная вероятность}{
+  $P(A\backslash B)=\dfrac{P(AB)}{P(B)}$
+}
+\dfn{Полная группа событий}{
+  $\Omega=H_1\cup H_2\cup\dots\cup H_m$,$H_i\cap H_j=\emptyset$
+}
+\dfn{Независимые события}{
+  $P(A\backslash B)=P(A)$ или $P(AB)=P(A)P(B)$
+}
+\dfn{Формула полной вероятности}{
+  $P(A)=\displaystyle\sum_{i=1}P(A\backslash H_i)P(H_i)$
+}
+\dfn{Формула Байеса}{
+  $P(A\backslash B)=\dfrac{P(B\backslash A)P(A)}{P(B)}$\\
+  $P(H_i\backslash A)=\dfrac{P(A\backslash H_i)P(H_i)}{P(A)}=\dfrac{P(A\backslash H_i)P(H_i)}{\displaystyle\sum_{i=1}^nP(A\backslash H_i)P(H_i)}$
+}
+\mprop{Применение формулы Байеса}{
+  $c$ --- правильное написание слова.
+  $t$ --- слово с ошибкой.
+  $P(c\backslash t)$ --- вероятность того, что вместо $c$ написать $t$\\
+  $P(c\backslash t)=\dfrac{P(t\backslash c)P(c)}{P(t)}$\\
+  $P(c)$---вероятность употребления слова $c$\\
+  $P(t)$---вероятность написать $t$\\
+  $P(t\backslash c)$ --- вероятность допустить ошибку, которая превращает $c$ в $t$
+}
+\dfn{Корпус}{
+  Набор текстов(возможно размеченных)
+}
+\nt{
+  $P(c)$ приблизительно равно частоте слова в корпусе\\
+  $P(t\backslash c)$
+}
+\ex{Типичные ошибки}{
+  \begin{enumerate}
+    \item Вставка символа: количество $\Rightarrow$ кол\underline{л}ичество
+    \item Удаление: солнце $\Rightarrow$ сонце
+    \item Замена: единица $\Rightarrow$ еденица
+    \item Перестановка соседних символов: конечный $\Rightarrow$ конченый
+  \end{enumerate}
+}
+\mprop{Определим некоторые величины}{
+  \begin{itemize}
+    \item $del[x,y]$ --- число раз, когда вместо xy было написано x
+    \item $ins[x,y]$ --- число раз, когда вместо x было написано xy
+    \item $sub[x,y]$ --- число раз, когда вместо x было написано y
+    \item $trans[x,y]$ --- число раз, когда вместо xy было написано yx
+    \item $count[\alpha]$ --- число раз, когда написано $\alpha$
+  \end{itemize}
+}
+$P(t\backslash c)=\begin{cases}
+  \dfrac{del[c_{p-1},c_p]}{count[c_{p-1}c_{p}]} \text{ для удаления},\\
+  \dfrac{ins[c_{p-1},t_p]}{count[c_{p-1}]} \text{ для вставки},\\
+  \dfrac{sub[c_p,t_p]}{count[c_p]} \text{ для замены},\\
+  \dfrac{trans[c_p,c_{p+1}]}{count[c_pc_{p+1}]} \text{ для перестановки}
+\end{cases}$
+\dfn{Матрица ошибок}{
+  Матрица значений del,ins,sub,trans,count.
+}
+
+\nt{
+  Возвращаясь к фармуле Байеса для поиска вероятности ошибок, в формуле\\
+  $P(c\backslash t)=\dfrac{P(t\backslash c)P(c)}{P(t)}$\\
+  Мы научились вычислять $P(c),P(t\backslash c)$.\\
+  А вычислять $P(t)$ не нужно, так как\\
+  $\hat{c}=argmax P(c\backslash t)=argmax \dfrac{P(t\backslash c)P(c)}{P(t)} = argmax P(t\backslash c)P(c)$
+}
+
+\qs{Найти вероятности исправлений}{
+Дано слово \textbf{стор}\\
+Есть альтернативы:
+\begin{enumerate}
+  \item стар --- 0.2\%
+  \item стог --- 0.1\%
+  \item стон --- 0.3\%
+  \item сток --- 0.5\%
+  \item стоп --- 0.1\%
+  \item тор --- 1\%
+  \item сто --- 0.2\%
+  \item сор --- 0.3\%
+  \item створ --- 0.3\%
+\end{enumerate}
+
+Подсчёт вероятностей ошибок для каждого из слов:
+\begin{enumerate}
+  \item $P(t\backslash c) = 1\%,P(c)=0.2\%\\
+    P($стор$\backslash$стар$)P($стар$)=2\cdot10^{-5}$
+  \item $P($стор$\backslash$стог$)P($стог$)=10^{-5}$
+  \item $3\cdot 10^{-5}$
+  \item $5\cdot10^{-5}$
+  \item $10^{-5}$
+  \item $3\cdot10^{-4}$ --- слово с наибольшей вероятностью.
+  \item $6\cdot10^{-5}$
+  \item $9\cdot10^{-5}$
+  \item $6\cdot10^{-5}$
+\end{enumerate}
+
+Получается, что наиболее вероятное исправление --- тор
+}
+
+\section{N-граммы}
+\dfn{N-грамма}{
+  N-грамма --- последовательность из N слов.\\
+  N=1 --- униграмма\\
+  N=2 --- биграмма\\
+  N=3 --- триграмма
+}
+
+\dfn{Скалярное произведение}{
+  $x=\mvec{x}{n}$\\
+  $y=\mvec{y}{n}$\\
+  Скалярное произведение: $\displaystyle\sum_{i=1}^{n}x_iy_i=(x,y)$
+}
+\ex{}{
+  $T_1,T_2$ --- два текста\\
+  $n$ --- число слов в текстах\\
+  $x_i$ --- число вхождений $i$-го слова в $T_1$\\
+  $y_i$ --- то же, что $x_i$, но для $T_2$\\
+  $(x,y)$ --- косинусное расстояние между $T_1$ и $T_2$.\\
+  Косинусное потому что $cos(\phi)=\dfrac{(x,y)}{|x|\cdot|y|}$
+
+  Идея состоит в том, что если $T_1$ и $T_2$ "близки", то $(x,y)$ --- большое. А если $T_1$ и $T_2$ не связаны тематически, то $(x,y)$ близко к 0.
+
+  Возникают вопросы, связанные с тем, что слова имеют много форм:
+  \begin{enumerate}
+    \item Можно убрать из $T_1,T_2$ артикли, предлоги, союзы и т.п.
+    \item Нужно ли различать формы одного слова.
+  \end{enumerate}
+}
+
+\mprop{Подсчёт вероятностей последовательностей слов}{
+  $P(AB)=P(A|B)P(B)$\\
+  $P(ABC)=P(A|BC)P(B|C)P(C)$\\
+  $\mvec{w}{n}$ --- последовательность слов(текст)\\
+  $P\mvec{w}{n}$ --- вероятность $\mvec{w}{n}$\\
+  $P\mvec{w}{n}=P(w_1)P(w_2|w_1)P(w_3|w_2w_1)\dots P(w_n|w_1\dots w_{n-1})$
+
+  В данной ситуации помогут N-граммы.\\
+  Предположим, что слово $w_i$ зависит только от N-1 предыдущего слова.\\
+  $P(w_i|w_1,\dots,w_{i-1})=P(w_i|w_{i-N+1}\dots w_{i-1})$
+}
+\ex{Частные случаи N-грамм}{
+  \begin{enumerate}
+    \item N=1.\\
+      $P(w_i|w_1\dots w_{i-1})=P(w_i)$
+    \item N=2.\\
+      $P(w_i|w_1\dots w_{i-1})=P(w_i|w_{i-1})$
+    \item N=3.\\
+      $P(w_i|w_1\dots w_{i-1})=P(w_i|w_{i-2}w_{i-1})$
+  \end{enumerate}
+}
+
+\nt{
+  Если в языке V слов, то число N-грамм составляет V$^N$.
+  Тогда возникает проблема:
+  \begin{itemize}
+    \item Если N "маленькое", то не учитываются "длинные" контексты.
+    \item Если N "большое", то $V^N$ больше размера корпуса.
+  \end{itemize}
+  При "больших" N получается переобучение.\\
+  $P\mvec{w}{n}=\prod_{i=1}^nP(w_i|w_{i-N+1}\dots w_{i-1})$\\
+  $w_{N-2}=w_{N-1}=\dots=w_0=<s>$ --- спец слово\\
+  При $N=2. P\mvec{w}{n}=P(w_1)p(w_2|w_1)P(w_3|w_2)\dots P(w_n|w_{n-1})$
+}
+\newpage
+\ex{Переобучение}{
+  Пусть есть некоторые результаты эксперимента (точки на графике). По этим результатам мы хотим примерно оценить исходную функцию (в примере $y=ax$). Однако через любое конечное количество точек может проходить многочлен, как изображено на рисунке:
+  \begin{figure}[H]
+    \begin{center}
+      \includegraphics[width=0.5\textwidth]{11.jpg}
+    \end{center}
+  \end{figure}
+}
+
+\mprop{}{
+  $c(xy)$ --- число пар $xy$ в корпусе\\
+  $c(x)$ --- число слов $x$ в корпусе\\
+  $P(w_i|w_{i-1})=\dfrac{c(w_{i-1}w_{i})}{\displaystyle\sum_{w}c(w_{i-1}w_i)}=\dfrac{c(w_{i-1}w_i)}{c(w_{i-1})}$
+}
+
+\ex{}{
+  Ворон к ворону летит, ворон ворону кричит.
+  \begin{enumerate}
+    \item Различать ли строчные и заглавные буквы?
+    \item Учитывать ли знаки препинания?
+    \item Различать ли формы слова?
+  \end{enumerate}
+}
+\section{Сглаживание}
+\dfn{Сглаживание}{
+  При большом N часто $c(w_{i-1}w_i)=0, P(w_i|w_{i-1})=0.$\\
+  0 могут быть в знаменателе в формулах, указанных выше.
+
+  Сглаживание --- изменение вероятностей так, чтобы:
+  \begin{enumerate}
+    \item не осталось нулей;
+    \item вероятности изменились "не очень сильно".
+  \end{enumerate}
+}
+
+\nt{
+  Пусть есть V наблюдаемых объектов (N-граммы).\\
+  Проведено K наблюдений: $\{a_1,\dots a_V\}$.\\
+$c_i$ --- число наблюдений $a_i$\\
+$p_i$ --- вероятность $a_i$\\
+$p_i=\frac{c_i}{k}$}
+
+\mprop{Аддитивное сглаживание(Сглаживание Лапласа)}{
+      Считаем, что каждый объект наболюдается на один раз чаще, чем на самом деле.\\
+      $p_i^*$ --- сглаживание вероятностей.\\
+      $p_i^*=\dfrac{c_i+1}{K+V}$\\
+      $K+V$ --- число наблюдений с учётом добавленных\\
+      $\displaystyle\sum_{i=1}^{V}p_i^*=\displaystyle\sum_{i=1}^{V}\dfrac{c_i+1}{K+V}=\dfrac{1}{K+V}\displaystyle\sum_{i=1}^{V}c_i+\displaystyle\sum_{i=1}^{V}\dfrac{1}{K+V}=$\\
+      $=\dfrac{K}{K+V}+\dfrac{V}{K+V}=1$\\
+      получается, что $p_i^*\geq0$\\
+      $c_i^*$ --- сглаживание количества.
+      $c_i^*=p_i^*K=(c_i+1)\dfrac{K}{K+X}$\\
+      $\displaystyle\sum_{i=1}^{V}c_i^*=\displaystyle\sum_{i=1}^{V}p_i^*K=K$
+}
+\newpage
+\qs{Применить сглаживание Лапласа}{
+  Дан корпус:\\
+  ворон к ворону летит,\\
+  ворон ворону кричит,\\
+  ворон ворону в ответ\\
+  Построим исходную таблицу N-грамм:\\
+  \begin{tabular}{|c|c|c|c|c|c|c|c|}
+    \hline
+    &ворон&к&ворону&летит&кричит&в&ответ\\\hline
+    ворон&&1;0.1;&2;0.2;&&&&\\\hline
+    к&&&1;0.1;&&&&\\\hline
+    ворону&&&&1;0.1&1;0.1;&1;0.1;&\\\hline
+    летит&&&&&&&\\\hline
+    кричит&&&&&&&\\\hline
+    в&&&&&&&1;0.1;\\\hline
+    ответ&&&&&&&\\\hline
+  \end{tabular}
+
+  Применим сглаживание:\\
+  Подсчитаем вероятности:\\
+  В пустых ячейках вероятность равна $\frac{1}{59}\approx0.017$\\
+  В ячейках с вероятностью 0.1 вероятность равна $\frac{2}{59}\approx0.034$\\
+  В ячейках с вероятностью 0.2 вероятность равна $\frac{3}{59}\approx0.051$\\
+  Подсчитаем количество:\\
+  В пустых ячейках количество равно $\frac{10}{59}\approx0.169$\\
+  В ячейках с вероятностью 0.1 вероятность равна $\frac{20}{59}\approx0.339$\\
+  В ячейках с вероятностью 0.2 вероятность равна $\frac{30}{59}\approx0.508$
+
+  \begin{tabular}{|c|c|c|c|c|}
+    \hline
+    &ворон&к&ворону&летит\\\hline
+    ворон&&0.339;0.034;&0.508;0.051;&\\\hline
+    к&&&0.339;0.034;&\\\hline
+    ворону&&&&0.339;0.034;\\\hline
+    летит&0.339;0.034;&&&\\\hline
+    кричит&0.339;0.034;&&&\\\hline
+    в&&&&\\\hline
+    ответ&&&&\\\hline
+  \end{tabular}
+
+  \begin{tabular}{|c|c|c|c|}
+    \hline
+    &кричит&в&ответ\\\hline
+    ворон&&&\\\hline
+    к&&&\\\hline
+    ворону&0.339;0.034;&0.339;0.034;&\\\hline
+    летит&&&\\\hline
+    кричит&&&\\\hline
+    в&&&0.339;0.034;\\\hline
+    ответ&&&\\\hline
+  \end{tabular}
+}
+\mprop{Сглаживание с учётом контекста}{
+  Сглаживаем построчно, фиксируя первое слово в каждой строке.\\
+  Первая строка:\\
+  $V=7,K=3\\
+  c_{1,2}=1,c_{1,3}=2\\
+  p_{1,2}=\frac{1}{3},p_{1,3}=\frac{2}{3}\\
+  p_{1,1}^*=\frac{0+1}{7+3}=\frac{1}{10}\\
+  p_{1,2}^*=\frac{1+1}{7+3}=\frac{2}{10}=\frac{1}{5}\\
+  p_{1,3}^*=\frac{2+1}{7+3}=\frac{3}{10}\\
+  c_{1,1}^*=\frac{3}{10}\\
+  c_{1,2}^*=\frac{3}{5}\\
+  c_{1,3}^*=\frac{9}{10}$\\
+  Вторая строка:
+  $V=7,K=1\\
+  p_{2,1}^*=\frac{0+1}{7+1}=\frac{1}{8}\\
+  c_{2,1}^*=\frac{1}{8}\\
+  p_{2,3}^*=\frac{1+1}{7+1}=\frac{1}{4}\\
+  c_{2,3}^*=\frac{1}{4}
+  $
+}
+
+\mprop{Сглаживание Уиттена-Белла}{
+  $V,K,c_i$ --- означают то же, что и в предыдущем алгоритме.\\
+  Суть алгоритма:\\
+  Оценить вероятность того, что на (K+1)-м шаге появится $a_i$.\\
+  Вероятность нового $a_i\approx$ вероятность появления события впервые.\\
+  Введём величину:\\
+  $Z=\displaystyle\sum_{c_i=0}1$ --- количество событий, которые никогда не наблюдались.
+  Тогда дадим всем им такую вероятность:\\
+  $\displaystyle\sum_{c_i=0}p_i^*=\dfrac{T}{K+T}$, где $T$ --- количество событий, которые произошли хотя бы один раз.\\
+  $\dfrac{T}{K+T}$ --- вероятность увидеть событие впервые.
+
+  Тогда вероятности определяются следующи образом:\\
+  $p_i^*=\dfrac{T}{Z(K+T)}$, если $c_i=0$\\
+  $p_i^*=\dfrac{c_i}{K+T}$, если $c_i>0$
+
+  Количества вычисляются следующим образом:\\
+  $c_i^*=p_i^*K$\\
+  $c_i^*=\dfrac{T}{Z}\cdot\dfrac{K}{K+T}$, если $c_i=0$\\
+  $c_i^*=c_i\cdot\dfrac{K}{K+T}$, если $c_i>0$
+}
+
+\qs{Сглаживание Уиттена-Белла}{
+  Применим к примеру с вороном сглаживание Уиттена-Белла.
+  $V=7^2=49,K=10,T=9\\
+  Z=V-T=49-9=40\\
+  p_{1,1}^*=\frac{T}{Z(K+T)}=\frac{9}{40(10+9)}\approx 0.012\\
+  p_{1,2}^*=\frac{c_i}{K+T}=\frac{1}{19}\approx 0.053\\
+  p_{1,2}^*=\frac{2}{19}\approx 0.105\\
+  c_{1,1}^*=0.12\\
+  c_{1,2}^*=0.53\\
+  c_{1,3}^*=1.05
+  $
+}
+
+\mprop{Метод Гуда-Тьюринга}{
+  $K_c$ --- количество событий, которые произошли ровно $c$ раз.\\
+  $K_0$ --- число событий, которые не наблюдались.\\
+  Последнее наблюдение произошло $c+1$ раз.\\
+  % рисунок 
+  Вероятность, что последний элемент наблюдался $c+1$ раз $\approx \dfrac{(c+1)K_{c+1}}{K_c}$\\
+  Вероятность того, что $c$ превратится в $c+1\approx\dfrac{(c+1)K_{c+1}}{K_c}$\\
+  $c=0, p_0^*=\dfrac{K_1}{K}$
+
+  Имеем $K_r$ количетво элементов частоты $r$\\
+  $p_{r+1}^*=\dfrac{(r+1)K_{r+1}}{KK_r}$\\
+  Тогда $c_{r+1}^*=p_{r+1}^*,K=(r+1)\dfrac{K_{r+1}}{K_r}$
+}
+\ex{Метод Гуда-Тьюринга для примера с вороном}{
+
+}
+\chapter{Части речи}
+\section{Определение частей речи}
+  \subsection{Определение, основанное на правилах}
+  \ex{that}{
+    I consider \underline{that} odd. --- "это"\\
+  It isn't \underline{that} odd. --- "настолько"}
+  \begin{algorithmic}
+    \If{(+1 A/ADV/QUANT)(+2 SENT-LIM)(NOT -1 SVOC/A)}
+      \State удалить все отличные от ADV
+    \Else
+      \State удалить метку ADV
+    \EndIf
+  \end{algorithmic}
+  \nt{
+    +1 --- слово справа\\
+    +2 --- второе слово справа\\
+    A --- прилагательное(adjective)\\
+    ADV --- наречие(adverb)\\
+    QUANT --- квантификатор\\
+    SENT-LIM --- граница предложения\\
+    -1 --- слово слева\\
+    SVOC --- глагол типа consider
+  }
+  \subsection{Скрытые марковские модели}
+  \dfn{Цепь маркова}{
+    $Q=\{q_0,\dots,q_n\}$ --- состояния\\
+    $A=(a_{ij})$ --- вероятности переходов\\
+    $a_{ij}$ --- вероятность перехода из $q_i$ в $q_j$\\
+    $\displaystyle\sum_{j=0}^{n}a_{ij}=1$ для всех $i$
+
+    \textbf{Марковское свойство:} вероятность перехода определяется только текущим состоянием и не зависит от предыдущих состояний.
+
+    $\pi(0\leq i\leq n)$ --- начальное распределение.\\
+    $\pi_i$ --- вероятность начать в состоянии $q_i$, $\displaystyle\sum_{i=0}^{n}\pi_i=1$
+  }
+  \dfn{Скрытая марковская модель}{
+    $Q,A,\pi$ --- как в цепи Маркова\\
+    $O=\{o_1,\dots,o_m\}$\\
+    $B=b_i(o_t)$ --- вроятность наболюдения $o_t$ в состоянии $q_i$.
+  }
+  \ex{Пример скрытой марковской модели}{
+    \begin{figure}[H]
+      \begin{center}
+        \includegraphics[width=0.6\textwidth]{12.jpg}
+      \end{center}
+    \end{figure}
+  }
+  \nt{Называется скрытой, потому что состояния сами по себе не видны, видны только наблюдения.}
+  \ex{Пример задачи для СММ}{
+    Дана последовательность наблюдений $o_1,\dots,o_T$. Найти наиболее вероятный путь в СММ.
+  }
+  \subsection{Алгоритм Витерби}
+  \mprop{Алгоритм}{
+    $Q=\{q_1,\dots,q_n\}$ --- состояние\\
+  $o_1,\dots,o_T$ --- последовательность наблюдений\\
+  $\pi_i$ --- вероятность начать в $q_i$
+\begin{enumerate}
+  \item $V(i,j)$ --- максимальная вероятность перейти в $q_i$ и выдать при этом $o_1,\dots,o_j$
+  \item $V(i,1) = \pi_ib_i(o_1)$\\
+    $V(i,t)= max_{1\leq j\leq n}\{V(j,t-1)\cdot a_{ij}\cdot b_i(o_t)\} = max_{1\leq j\leq n}\{V(j,t-1)\cdot a_{ij}\}\cdot b_i(o_t)$
+    \begin{figure}[H]
+      \begin{center}
+        \includegraphics[width=0.5\textwidth]{13.jpg}
+      \end{center}
+    \end{figure}
+  \end{enumerate}
+}
+
+\malg{Витерби}{Скрытая марковская модель}{Вероятности}{
+  \For{i=1 до n}
+    \State $V(i,1)=\pi_i\cdot b_i(o_i);$
+    \State $p(i,1)=null;$
+  \EndFor
+  \For{$t=2$ до $T$}
+    \For{$i=1$ до $n$}
+      \For{$j=1$ до $n$}
+        \State $c=V(j,t-1)\cdot a_{ij}\cdot b_{i}(o_t);$
+        \If{$V(i,t)=0$ или $c>V(i,t)$}
+          \State $V(i,t)=c$;
+          \State $p(i,t)=j$;
+        \EndIf
+      \EndFor
+    \EndFor
+  \EndFor
+}
+
+\mprop{Применение алгоритма Витерби для распознавания частей речи}{
+  $Q$ --- части речи\\
+  $O$ --- слова\\
+  $a_{ij}$ --- вероятность части речи $j$ после части речи $i$\\
+  $b_{i}(o_t)$ --- вероятность слова $o_t$, если известно, что часть речи --- $i$\\
+  $b_{\text{гл}}(\text{печь})$ --- вероятность слова "печь", если часть речи -- глагол\\
+  $b_{\text{сущ}}(\text{печь})$ --- вероятность слова "печь", если часть речи -- существительное\\
+  $a_{ij},b_I(o_t),\pi_i$ вычисляются из корпуса. $\pi_i$ --- вероятность того, что первое слово имеет часть речи $i$.
+
+  $o_1,\dots,o_T$ --- предложение. Вычисляем наиболее вероятные части речи $q_1,\dots,q_T$
+}
+
+\qs{Применить алгоритм Витерби}{
+  Пусть СММ из примера 3.1.2 отработала и получена последовательность наблюдений: $o_1,\dots,o_4=abba$. Применить к ним алгоритм Витерби.
+  \begin{tabular}{|c|c|c|c|c|}
+    \hline
+    $q\backslash t$&1&2&3&4\\\hline
+    $q_1$&$\frac{1}{2}$,---&$\frac{1}{24},q_1$&$\frac{1}{54},q_2$&\\\hline
+    $q_2$&0,---&$\frac{1}{9},q_1$&$\frac{4}{81},q_2$&\\\hline
+    $q_3$&0,---&$\frac{1}{16},q_1$&$\frac{1}{128},q_3$&\\\hline
+  \end{tabular}
+$V(i,t)=max\{V(j,t-1)a_{ij}b(o_t)\}$
+
+$V(1,2)$\\
+$V(1,1)a_{1,1}b_1(o_2)=\frac{1}{2}\cdot\frac{1}{6}\cdot\frac{1}{2}=\frac{1}{24}$\\
+$V(2,1)a_{2,1}b_1(o_2)=0$\\
+$V(3,1)a_{3,1}b_1(o_2)=0$
+\vspace{1em}
+
+$V(2,2)\\
+V(1,1)a_{1,2}b_2(o_2)=\frac{1}{9}$
+\vspace{1em}
+
+$V(3,2)\\
+V(1,1)a_{1,3}b_3(o_2)=\frac{1}{16}$
+\vspace{1em}
+
+$V(1,3)\\
+V(1,2)a_{1,1}b_1(o_3)=\frac{1}{288}\\
+V(2,2)a_{2,1}b_1(o_3)=\frac{1}{54}\\
+V(3,2)a_{3,1}b_1(o_3)=\frac{1}{128}$
+\vspace{1em}
+
+$V(2,3)\\
+V(1,2)a_{1,2}b_2(o_3)=\frac{1}{108}\\
+V(2,2)a_{2,2}b_2(o_3)=\frac{4}{81}\\
+V(3,2)a_{3,2}b_2(o_3)=\frac{1}{96}$
+\vspace{1em}
+
+$V(3,3)\\
+V(1,2)a_{1,3}b_3(o_3)=\frac{1}{192}\\
+V(2,2)a_{2,3}b_3(o_3)=0\\
+V(3,2)a_{3,3}b_3(o_3)=\frac{1}{128}$
+
+\nt{Д/з: заполнить 4-й столбец таблицы}
+}
+
+\chapter{Грамматики}
+\section{Контекстно-зависимые грамматики}
+\dfn{КЗ-грамматики}{
+  $G=(N,\Sigma,P,S)$\\
+  Правила имеют вид: $\xi A\eta\rightarrow \xi\alpha\eta$, где $A\in N;\xi,\eta\in(\Sigma\cup N)^*;\alpha\in(\Sigma\cup N)^+$
+}
+\dfn{Неукорчивающая грамматика}{
+  $\alpha\rightarrow\beta\in P\Rightarrow |\alpha|\leq|\beta|$
+}
+\ex{Пример КЗ-грамматики}{
+  Язык $L_1=\{a^nb^nc^n:n>0\}$\\
+  Грамматика, порождающая этот язык:\\
+  $
+  S\rightarrow aSBC\\
+  S\rightarrow aBC\\
+  CB\rightarrow BC\\
+  aB\rightarrow ab\\
+  bB\rightarrow bb\\
+  bC\rightarrow bc\\
+  cC\rightarrow cc\\
+  $
+  Она не совсем КЗ. Чтобы она стала совсем КЗ, надо, чтобы правило $CB\rightarrow BC$ было заменено последовательностью правил:\\
+  $CB\rightarrow C'B\\
+  C'B\rightarrow C'C\\
+  C'C\rightarrow BC$
+}
+\ex{Ещё пример грамматики}{
+  $L_2=\{a^{n^2}:n>0\}$\\
+  $
+    S\rightarrow ABBDF\\
+    BD\rightarrow DCB\\
+    BC\rightarrow CB\\
+    AD\rightarrow AAE\\
+    EC\rightarrow AE\\
+    EB\rightarrow BE\\
+    EF\rightarrow BBDF\\
+    DF\rightarrow a\\
+    B\rightarrow a\\
+    A\rightarrow a\\
+    S\rightarrow a
+  $
+}
+\clm{}{}{$S\Rightarrow A^{n^2}B^{2n}DF$}
+\pf{Доказательство}{
+  $(n+1)^2=n^2+2n+1$\\
+  $S\Rightarrow^* A^{n^2}B^{2n}DF$
+}
+\qs{Исправить грамматику из примера 3.2.2}{
+  Заменить правило: $DF\rightarrow a$ на $EF\rightarrow BBa$ и добавить правило $S\rightarrow a$.
+}
+\qs{Построить грамматики}{
+  $L_3=\{wcw:w\in\{a,b\}^*\}$\\
+  $L_4=\{ww:w\in\{a,b\}^+\}$\\
+  $L_5=\{a^{2^n}:n>0\}$\\
+  $L_6=\{a^{n}:n\text{ --- составное число}\}$
+}
+
+\section{Классические категориальные грамматики}
+\dfn{Элементарные категории}{
+  $\mathbb{C}$ --- элементарные категории (примитивные типы). Например, часть речи в предложении.
+}
+\dfn{Категория}{
+  \begin{enumerate}
+    \item Если $\Phi\in\mathbb{C}$, то $\Phi$ --- категория.
+    \item Если $\Phi,\Psi$ --- категории, то $[\Phi/\Psi]$ и $[\Psi\backslash\Phi]$ --- категории.
+  \end{enumerate}
+  $Cat(\mathbb{C})$ --- множество всех категорий над $\mathbb{C}$.
+}
+
+\mprop{Правила сокращения}{
+  $\Gamma_1,\Gamma_2\in Cat(\mathbb{C})^*$
+  \begin{enumerate}
+    \item $\Gamma_1[\Phi/\Psi]\Psi\Gamma_2\vdash\Gamma_1\Phi\Gamma_2$
+    \item $\Gamma_1\Psi[\Psi\backslash\Phi]\Gamma_2\vdash\Gamma_1\Phi\Gamma_2$
+  \end{enumerate}
+}
+\dfn{Классическая категориальная грамматика}{
+  Четвёрка $G=(\Sigma,\mathbb{C},S,\lambda)$, где:\\
+  $\Sigma$ --- алфавит терминалов;\\
+  $\mathbb{C}$ --- множество элементарных категорий;\\
+  $S\in\mathbb{C}$ --- главная категория;\\
+  $\lambda:\Sigma\rightarrow P_{fin}(Cat(\mathbb{C}))$ --- словарь
+  \nt{
+    $w=a_1a_2\dots a_n$\\
+    $\lambda(w)=\{\Phi_1,\Phi_2,\dots,\Phi_n: \Phi_i\in\lambda(a_i)\}$
+  }
+}
+\dfn{Язык, порождаемый грамматикой $G$}{
+  $L(G)=\{a_1a_2\dots a_n\in\Sigma^+:\text{ существуют $\Phi_i\in\lambda(a_i)$ такие, что }\\\Phi_1\Phi_2\dots\Phi_n\vdash^* S\}$
+}
+\ex{}{
+  мама $\rightarrow$ подл\\
+  мыла $\rightarrow$ [подл$\backslash$S], [[подл$\backslash$S]/доп]\\
+  грязную $\rightarrow$ опр\\
+  раму $\rightarrow$ доп, [опр$\backslash$доп]
+
+  \mtree{
+    [S 
+      [{[подл$\backslash$S]}
+        [доп 
+          [раму\\{[опр$\backslash$доп]}]
+          [грязную\\опр]
+        ]
+        [мыла\\{[[подл$\backslash$S]/доп]}]
+      ]
+      [мама\\подл]
+    ]
+  }
+}
+
+\ex{}{
+  $L_1=\{w\in\{a,b\}^+: |w|_a \text{ чётно }\}$\\
+  $a\mapsto[S/T][T/S],T$\\
+  $b\mapsto[S/S],[T/T],S$
+  $aba$\\
+  $[S/T][T/T]T\vdash[S/T]T\vdash S$
+
+  \mtree{
+    [S 
+        [T 
+          [a\\T]
+          [b\\{[T/T]}]
+        ]
+      [a\\{[S/T]}]
+    ]
+  }
+}
+
+\ex{}{
+  $L_2=\{a^nb^n:n>0\}$\\
+  $a\mapsto[S/B]$\\
+  $b\mapsto[S\backslash B],B$
+
+  $ab$\\
+  $[S/B]B\vdash S$\\
+  $aabb$\\
+  $[S/B][S/B]B[S\backslash B]$
+
+  \mtree{
+    [S 
+      [B
+        [b\\{[S$\backslash$B]}]
+        [S 
+          [b\\B]
+          [a\\{[S/B]}]
+        ]
+      ]
+      [a\\{[S/B]}]
+    ]
+  }
+}
+\qs{Построить категориальную грамматику для языка}{
+  $L_3=\{a^nc^kb^n: n,k>0\}$\\
+  $a\mapsto[S/B]$\\
+  $b\mapsto[C\backslash B],[S\backslash B]$\\
+  $c\mapsto C,[C\backslash C]$
+
+\newpage
+  $aacccbb$
+  \mtree{
+    [S 
+      [B 
+        [b\\{[S$\backslash$B]}]
+        [S 
+          [B 
+            [b\\{[C$\backslash$B]}]
+            [C 
+              [c\\{[C$\backslash$C]}]
+                [C 
+                  [c\\{[C$\backslash$C]}]
+                  [c\\C]
+                ]
+            ]
+          ]
+          [a\\{[S/B]}]
+        ]
+      ]
+      [a\\{[S/B]}]
+    ]
+  }
+}
+
+\qs{Построить категориальную грамматику для языка}{
+  $L_4=\{a^nb^k:0<n<k\}$
+
+  $a\mapsto[S/B]$\\
+  $b\mapsto[S\backslash B],[B'/B'],B',[B/B']$
+}
+\qs{Построить категориальную грамматику для языка}{
+  $L_5\subseteq\{0,1\}^+$ --- язык правильной расстановки скобок.\\
+  $00101101\in L_5$\\
+  $10\notin L_5$
+
+  \vspace{1em}
+  $0\mapsto[S/A],[[S/S]/A],[[S/A]/S],[[[S/S]/A]/S]$\\
+  $1\mapsto A$
+
+  \mtree{
+    [S 
+      [S 
+        [1\\{A}]
+        [0\\{[S/A]}]
+      ]
+      [{[S/S]}
+        [1\\A]
+        [{[[S/S]A]}
+          [S 
+            [S 
+              [1\\{A}]
+              [0\\{[S/A]}]
+            ]
+            [{[S/S]}
+              [1\\A]
+              [0\\{[[S/S]/A]}]
+            ]
+          ]
+          [0\\{[[[S/S]/A]/S]}]
+        ]
+      ]
+    ]
+  }
+}
+
+\dfn{Подкатегории}{
+  $\Phi\in Cat(\mathbb{C})$\\
+  $Subcat(\Phi)$ --- множество подкатегорий категории $\Phi$
+  \begin{enumerate}
+    \item Если $\Phi\in\mathbb{C}$, то\\
+      $Subcat(\Phi)=\{\Phi\}$
+    \item Если $\Phi=[\Psi/\Theta]$ или $\Phi=[\Theta\backslash\Psi]$, то\\
+    $Subcat(\Phi)=Subcat(\Psi)\cup\{\Phi\}$
+  \end{enumerate}
+
+  $G=(\Sigma,\mathbb{C},S,\lambda)$\\
+  $Subcat(G)$ --- множество подкатегорий категорий из $\lambda$
+}
+
+\thm{}{
+  По любой классической категориальной грамматике можно построить эквивалентную КС-грамматику.
+}
+\pf{Доказательство}{
+  $G=(\Sigma,\mathbb{C},S,\lambda)$\\
+  $G'=(N,\Sigma, P,S)$\\
+  $N=Subcat(G)$
+  \begin{enumerate}
+    \item $\Phi\in\lambda(a)\Rightarrow\Phi\rightarrow a\in P$
+    \item $[\Phi/\Psi],\Psi\in N\Rightarrow\Phi\rightarrow [\Phi/\Psi]\Psi\in P$
+    \item $[\Psi\backslash\Phi],\Psi\in N\Rightarrow\Psi[\Psi\backslash\Phi]\in P$
+  \end{enumerate}
+  \mclm{Утверждение}{
+    Пусть $\Phi_1',\dots,\Phi'_n,\Psi\in N$. Тогда $\Phi_1',\dots\Phi'_n\Psi\vdash^* \Psi\Leftrightarrow\Psi\Rightarrow^*\Phi_1\dots\Phi_n$
+  }
+  \pf{Доказательство}{
+    \textbf{Индукция по $n$}\\
+    \underline{Базис}: $n=1, \Phi_1=\Psi$\\
+    \underline{Индукционный шаг}:
+    $(\Rightarrow)\Phi_1\dots\Phi_n\vdash^*\Psi$\\
+    а)$\Phi_1\dots\Phi_i\vdash^*[\Psi/\Theta]$\\
+    $\Phi_{i+1}\dots\Phi_n\vdash^*\Theta$\\
+    По индукционному предположению:\\
+    $[\Psi/\Theta]\Rightarrow^*\Phi_1\dots\Phi_i$;\\
+    $\Theta\Rightarrow^*\Phi_{i+1}\dots\Phi_n$\\
+    $\Theta\in N$\\
+    $\Psi\Rightarrow[\Psi/\Theta]\Theta\Rightarrow^*\Phi_1\dots\Phi_n$
+
+    \vspace{1em}\noindent
+    б)$\Phi_1\dots\Phi_i\vdash^*\Theta$\\
+    $\Phi_{i+1}\dots\Phi_n\vdash^*[\Theta\backslash\Psi]$\\
+    Аналогично
+
+    \noindent$(\Leftarrow)\Psi\Rightarrow^*\Phi_1\dots\Phi_n$\\
+    а)$\Psi\rightarrow[\Psi/\Theta]\Theta$\\
+    $[\Psi/\Theta]\Rightarrow^*\Phi_1\dots\Phi_i$\\
+    $\Theta\Rightarrow^*\Phi_{i+1}\dots\Phi_n$\\
+    По индукционному предположению:\\
+    $\Phi_1\dots\Phi_i\vdash^*[\Psi/\Theta]$\\
+    $\Phi_{i+1}\dots\Phi_n\vdash^*\Theta$\\
+    $\Phi_1\dots\Phi_n\vdash^*[\Psi/\Theta]\Theta\vdash\Psi$
+
+    \vspace{1em}\noindent
+    б)$\Psi\rightarrow\Theta[\Theta\backslash\Psi]$\\
+    Аналогично.
+  }
+}
+
 \end{document}
